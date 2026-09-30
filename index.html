@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Joke Battle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" data-go="home" aria-label="Joke Battle home">😂⚔️ Joke Battle</button>
+    <nav aria-label="Main">
+      <button class="nav-btn" data-go="home">Home</button>
+      <button class="nav-btn" data-go="stats">Stats</button>
+      <button class="nav-btn" id="themeBtn" aria-label="Switch theme">🌙</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Battle HUD -->
+    <section id="hud" class="hud" hidden aria-label="Battle progress">
+      <div class="hud-top">
+        <div class="hud-cell"><small>BATTLE</small><b id="hudBattle">#01</b></div>
+        <div class="hud-cell"><small>TARGET</small><b id="hudTarget">500</b></div>
+        <div class="hud-cell score-cell"><small>LAUGH SCORE</small><b id="hudScoreNum" data-v="0">0</b></div>
+        <div class="hud-cell" id="hudComboCell"><small>COMBO</small><b id="hudCombo">🔥 0</b></div>
+      </div>
+      <div class="bar" role="progressbar" aria-label="Battle target progress" id="hudBarWrap" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar-fill" id="hudBar"></div></div>
+    </section>
+
+    <!-- HOME -->
+    <section id="home" class="screen">
+      <div class="home-grid">
+        <div class="home-main">
+          <p class="chip">⚔️ Arena open</p>
+          <h1 class="hero">Ready for a Joke Battle?</h1>
+          <p class="sub">Let's find out how easily you can be entertained.</p>
+          <div class="actions">
+            <button class="btn primary big" id="startBtn">⚔️ START BATTLE</button>
+            <button class="btn ghost big" id="luckyBtn">🎲 I'M FEELING LUCKY</button>
+          </div>
+          <p class="muted small hint">Battle: hit a target score. Lucky: no target, no pressure.</p>
+        </div>
+        <div class="home-side">
+          <div class="mini-stats">
+            <div><span id="hBest">0</span><small>🏆 Best Score</small></div>
+            <div><span id="hRated">0</span><small>😂 Jokes Rated</small></div>
+            <div><span id="hStreak">0</span><small>🔥 Current Streak</small></div>
+          </div>
+          <div class="card daily">
+            <h2>📅 DAILY CHALLENGE</h2>
+            <p id="dailyText"></p>
+            <div class="bar" role="progressbar" aria-label="Daily challenge progress" id="dailyBarWrap" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar-fill alt" id="dailyBar"></div></div>
+            <p class="muted small">Today's Progress: <strong id="dailyProg">0 / 0</strong></p>
+            <p id="dailyDone" class="win-text" hidden>🏆 CHALLENGE COMPLETE</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BATTLE INTRO -->
+    <section id="intro" class="screen center" hidden>
+      <p class="chip" id="introNum">BATTLE #01</p>
+      <h2 class="big-line" id="introOpp"></h2>
+      <div class="card target"><small>🎯 TARGET SCORE</small><strong id="introTarget">500</strong><span>Laugh Points</span></div>
+      <p class="count-num" id="countNum" aria-live="assertive">GET READY...</p>
+    </section>
+
+    <!-- LOADING -->
+    <section id="loading" class="screen center" hidden>
+      <p class="muted" id="loadRound">ROUND 01</p>
+      <h2 class="big-line" id="loadLine">Prepare yourself...</h2>
+      <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      <p class="sr-only" role="status">Loading a joke</p>
+    </section>
+
+    <!-- JOKE -->
+    <section id="joke" class="screen" hidden>
+      <p class="muted center-text" id="jokeRound">ROUND 01</p>
+      <article class="card joke-card">
+        <p class="setup" id="jokeSetup"></p>
+        <p class="punch" id="jokePunch" hidden></p>
+      </article>
+      <div class="actions"><button class="btn primary" id="revealBtn" hidden>🥁 REVEAL PUNCHLINE</button></div>
+
+      <div id="rateBox" hidden>
+        <h2 class="center-text" id="rateTitle">HOW FUNNY WAS THAT?</h2>
+        <div class="choices" role="group" aria-labelledby="rateTitle">
+          <button class="choice" data-rating="1"><span>💀</span>I regret laughing</button>
+          <button class="choice" data-rating="2"><span>😐</span>Not funny</button>
+          <button class="choice" data-rating="3"><span>🙂</span>It was okay</button>
+          <button class="choice" data-rating="4"><span>😂</span>Actually funny</button>
+          <button class="choice" data-rating="5"><span>🤣</span>I can't breathe</button>
+        </div>
+        <div id="meterBox" class="card meter" hidden>
+          <div class="hud-row"><strong>FUNNY METER</strong><span id="meterNum">0%</span></div>
+          <div class="bar tall"><div class="bar-fill" id="meterBar"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="result" class="screen center" hidden>
+      <h2 class="big-line" id="resMsg"></h2>
+      <p class="points" id="resPoints">+0</p>
+      <p class="muted">Laugh Points</p>
+      <div class="mini-stats">
+        <div><span id="resTotal">0</span><small id="resTotalLabel">Your current score</small></div>
+        <div><span id="resBest">0</span><small>Best score</small></div>
+      </div>
+      <p class="combo" id="resCombo" hidden></p>
+      <div class="actions"><button class="btn primary big" id="nextBtn">Continue</button></div>
+    </section>
+
+    <!-- BATTLE WON -->
+    <section id="won" class="screen center" hidden>
+      <h1 class="hero">🏆 BATTLE WON!</h1>
+      <p class="sub">You survived the Joke Battle.</p>
+      <p class="pb" id="pbBanner" hidden>🔥 NEW PERSONAL BEST! 🔥</p>
+      <div class="mini-stats four">
+        <div><span id="wScore">0</span><small>Final Score</small></div>
+        <div><span id="wRated">0</span><small>Jokes Rated</small></div>
+        <div><span id="wAvg">0</span><small>Average Rating</small></div>
+        <div><span id="wCombo">0</span><small>Best Combo</small></div>
+      </div>
+      <div class="actions">
+        <button class="btn primary big" id="rematchBtn">⚔️ REMATCH</button>
+        <button class="btn ghost" data-go="home">Home</button>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section id="stats" class="screen" hidden>
+      <h1 class="hero small-hero">Your comedy record</h1>
+      <div class="stat-list">
+        <div class="card"><small>😂 Total Jokes Rated</small><strong id="sRated">0</strong></div>
+        <div class="card"><small>🏆 Best Battle Score</small><strong id="sBest">0</strong></div>
+        <div class="card"><small>⭐ Average Rating</small><strong id="sAvg">0</strong></div>
+        <div class="card"><small>🔥 Best Combo</small><strong id="sCombo">0</strong></div>
+        <div class="card"><small>🎯 Challenges Completed</small><strong id="sChall">0</strong></div>
+      </div>
+      <div class="actions"><button class="btn ghost" data-go="home">Back home</button></div>
+    </section>
+
+    <!-- ERROR -->
+    <section id="error" class="screen center" hidden>
+      <h2 class="big-line">Your opponent didn't show up 😂</h2>
+      <p class="sub" id="errorDetail">We couldn't load a joke.</p>
+      <div class="actions">
+        <button class="btn primary big" id="retryBtn">Try Again</button>
+        <button class="btn ghost" data-go="home">Home</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="confetti" aria-hidden="true"></div>
+  <script src="script.js"></script>
+</body>
+</html>
